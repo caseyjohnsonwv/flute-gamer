@@ -9,18 +9,11 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 
-def freq_to_note(frequency, confidence):
-    try:
-        if confidence * 100 < 80:
-            # force value error
-            math.log2(0)
-        notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
-        note_number = round(12 * math.log2(frequency / 440) + 49)
-        note = notes[(note_number - 1 ) % len(notes)]
-        octave = (note_number + 8 ) // len(notes)
-    except ValueError:
-        note = None
-        octave = -math.inf
+def freq_to_note(frequency):
+    notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
+    note_number = round(12 * math.log2(frequency / 440) + 49)
+    note = notes[(note_number - 1 ) % len(notes)]
+    octave = (note_number + 8 ) // len(notes)
     return note, octave
 
 
@@ -30,21 +23,26 @@ def main():
     keyboard = Controller()
 
     bitrate = 44100
-    duration = 0.1 # seconds
+    duration = 0.2 # seconds
     num_frames = int(bitrate * duration)
     while True:
         data = sd.rec(num_frames, bitrate, channels=1)
         sd.wait()
-        time, freq, conf, activation = crepe.predict(data, bitrate, model_capacity='tiny', step_size=(duration * 1000 // 2))
+        time, freq, conf, activation = crepe.predict(data, bitrate, model_capacity='tiny', step_size=(duration * 1000 // 10))
         data = zip(freq, conf)
-        results = [freq_to_note(frequency = dataframe[0], confidence = dataframe[1]) for dataframe in data]
+        results = []
+        for dataframe in data:
+            freq, conf = dataframe
+            # check for frequency audible and confidence 80%
+            if freq > 50 and conf > 0.8:
+                results.append(freq_to_note(freq))
+        results = list(set(results))
         for note, octave in results:
-            if note is not None:
-                print(f"{note}{octave}")
-                # sing an F3 into the microphone to kill the terminal
-                if note == 'F' and octave == 3:
-                    with(keyboard.pressed(Key.ctrl_l)):
-                        keyboard.tap('c')
+            print(f"{note}{octave}")
+            # sing an F3 into the microphone to kill the terminal
+            if note == 'F' and octave == 3:
+                with(keyboard.pressed(Key.ctrl_l)):
+                    keyboard.tap('c')
 
 
 
