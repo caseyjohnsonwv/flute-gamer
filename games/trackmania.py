@@ -3,6 +3,9 @@ import time
 
 UP_ARROW = 0xC8
 DOWN_ARROW = 0xD0
+LEFT_ARROW = 0xCB
+RIGHT_ARROW = 0xCD
+
 LIVE_KEYS = set()
 
 class TrackmaniaHandler:
@@ -13,8 +16,16 @@ class TrackmaniaHandler:
                 key = DOWN_ARROW
                 LIVE_KEYS.add(key)
                 PressKey(key)
+            case 'A#4':
+                key = LEFT_ARROW
+                LIVE_KEYS.add(key)
+                PressKey(key)
             case 'A5':
                 key = UP_ARROW
+                LIVE_KEYS.add(key)
+                PressKey(key)
+            case 'A#5':
+                key = RIGHT_ARROW
                 LIVE_KEYS.add(key)
                 PressKey(key)
             case None:

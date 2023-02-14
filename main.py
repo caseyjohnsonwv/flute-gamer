@@ -22,7 +22,7 @@ def freq_to_note(frequency):
 
 def main():
     bitrate = 16000
-    duration = 0.1 #seconds
+    duration = 0.15 #seconds
     num_frames = int(bitrate * duration)
 
     # listen for audio and convert to notes
