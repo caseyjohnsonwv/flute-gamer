@@ -1,4 +1,5 @@
 crepe
 numpy
+pynput
 sounddevice
 tensorflow
