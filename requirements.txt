@@ -1,0 +1,4 @@
+crepe
+numpy
+sounddevice
+tensorflow
